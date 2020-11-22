@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<!-- local stylesheet -->
+<link rel="stylesheet" href="style.css">
+
+<head>
+    <!-- Refresh the page every 10 minutes -->
+    <meta http-equiv="refresh" content="600">
+</head>
+
+<body>
+    <div class="img-container">
+        <img id="satImage" src="https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/20203271600_GOES16-ABI-FD-GEOCOLOR-1808x1808.jpg">
+    </div>
+</body>
+
+</html>
+<script>
+    // Create date object
+    var now = new Date();
+
+    var utc_timestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+        now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+
+    oldminutes = now.getUTCMinutes()
+
+    now.setUTCMinutes(Math.floor((oldminutes - 30) / 10) * 10)
+
+    var start = new Date(now.getFullYear(), 0, 0);
+    var diff = now - start;
+    var oneDay = 1000 * 60 * 60 * 24;
+    var day = Math.floor(diff / oneDay);
+
+    console.log('Day of year: ' + day);
+    goesTimeObject = (now.getUTCFullYear().toString() + day.toString() + now.getUTCHours().toString() + now.getUTCMinutes().toString())
+    console.log(goesTimeObject)
+
+
+
+
+
+
+    goesSrcString = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/${goesTimeObject}_GOES16-ABI-FD-GEOCOLOR-1808x1808.jpg`
+    satImage = document.getElementById("satImage")
+    satImage.src = goesSrcString
+</script>
