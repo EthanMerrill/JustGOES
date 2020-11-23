@@ -38,10 +38,16 @@
     }
 
 
-
-
     // Create date object
     function getDate(offset) {
+        //utility function to pad minutes and hours: 
+        function pad(value) {
+            if (value < 10) {
+                return '0' + value;
+            } else {
+                return value;
+            }
+        }
         var now = new Date();
 
         var utc_timestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
@@ -61,7 +67,7 @@
         } else {
             goesTimeMinutes = now.getUTCMinutes().toString()
         }
-        return (now.getUTCFullYear().toString() + day.toString() + now.getUTCHours().toString() + goesTimeMinutes)
+        return (now.getUTCFullYear().toString() + day.toString() + pad(now.getUTCHours()).toString() + goesTimeMinutes)
 
     }
 
@@ -72,24 +78,26 @@
     }
 
 
-    let offset = 10
+    let offset = 40
     goesTimeObject = getDate(offset)
         // Find the smallest image size to get given the display resolution
     imageSizes = [339, 678, 1808, 5424, 10848]
     imageSize = (imageSizes[getIndexToIns(imageSizes, window.innerHeight)])
-
     lookbackImage(offset);
 
     async function lookbackImage(offset) {
-        while (document.getElementById('satImage').height < Math.min(...imageSizes)) {
-            console.log(document.getElementById('satImage').height, "dasd")
+        var i = 0
+        while (i < 500) {
             offset = offset + 10
             goesTimeObject = getDate(offset)
             updateImage(goesTimeObject, imageSize)
-            if (offset > 1000) {
-                console.log("Offset over 1000, exited while loop")
+            let imgHeight = await document.getElementById('satImage').height
+            if (imgHeight > Math.min(...imageSizes)) {
+                console.log(`${imgHeight} image found for ${goesTimeObject}`)
                 break
             }
+            console.log(`${imgHeight} image NOT found for ${goesTimeObject}`)
+            i++
         }
     }
 </script>
