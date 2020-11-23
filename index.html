@@ -78,26 +78,28 @@
     }
 
 
-    let offset = 40
+    let offset = 30
     goesTimeObject = getDate(offset)
         // Find the smallest image size to get given the display resolution
     imageSizes = [339, 678, 1808, 5424, 10848]
     imageSize = (imageSizes[getIndexToIns(imageSizes, window.innerHeight)])
-    lookbackImage(offset);
+    let imagepromise = updateImage(goesTimeObject, imageSize)
 
-    async function lookbackImage(offset) {
-        var i = 0
-        while (i < 500) {
-            offset = offset + 10
-            goesTimeObject = getDate(offset)
-            updateImage(goesTimeObject, imageSize)
-            let imgHeight = await document.getElementById('satImage').height
-            if (imgHeight > Math.min(...imageSizes)) {
-                console.log(`${imgHeight} image found for ${goesTimeObject}`)
-                break
-            }
-            console.log(`${imgHeight} image NOT found for ${goesTimeObject}`)
-            i++
-        }
-    }
+    // lookbackImage(offset);
+
+    // async function lookbackImage(offset) {
+    //     var i = 0
+    //     while (i < 100) {
+    //         offset = offset + 10
+    //         goesTimeObject = getDate(offset)
+    //         let imagepromise = await updateImage(goesTimeObject, imageSize)
+    //         let imgHeight = await document.getElementById('satImage').height
+    //         if (imgHeight > Math.min(...imageSizes)) {
+    //             console.log(`${imgHeight} image found for ${goesTimeObject}`)
+    //             break
+    //         }
+    //         console.log(`${imgHeight} image NOT found for ${goesTimeObject}`)
+    //         i++
+    //     }
+    // }
 </script>
