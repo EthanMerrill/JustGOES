@@ -65,7 +65,7 @@
 
     }
 
-    function updateImage(goesTime, imageSize) {
+    async function updateImage(goesTime, imageSize) {
         goesSrcString = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/${goesTimeObject}_GOES16-ABI-FD-GEOCOLOR-${imageSize}x${imageSize}.jpg`
         satImage = document.getElementById("satImage").src = goesSrcString
         return Promise
@@ -80,7 +80,7 @@
 
     lookbackImage(offset);
 
-    function lookbackImage(offset) {
+    async function lookbackImage(offset) {
         while (document.getElementById('satImage').height < Math.min(...imageSizes)) {
             console.log(document.getElementById('satImage').height, "dasd")
             offset = offset + 10
