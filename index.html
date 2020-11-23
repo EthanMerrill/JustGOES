@@ -11,9 +11,9 @@
 <body>
     <div class=page-container>
         <div class="img-container">
-            <img id="satImage" src="https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/20203271600_GOES16-ABI-FD-GEOCOLOR-1808x1808.jpg">
-            <div class="noaa-cover"></div>
-            <div class='date-cover'></div>
+            <img id="satImage" src="">
+            <div class="noaa-cover cover"></div>
+            <div class='date-cover cover'></div>
         </div>
     </div>
 
@@ -21,31 +21,9 @@
 
 </html>
 <script>
-    // Create date object
-    var now = new Date();
+    // get screem size 
 
-    var utc_timestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
-        now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
-
-    oldminutes = now.getUTCMinutes()
-
-    now.setUTCMinutes(Math.floor((oldminutes - 20) / 10) * 10)
-
-    var start = new Date(now.getFullYear(), 0, 0);
-    var diff = now - start;
-    var oneDay = 1000 * 60 * 60 * 24;
-    var day = Math.floor(diff / oneDay);
-
-    if (now.getUTCMinutes() == 0) {
-        goesTimeMinutes = "00"
-    } else {
-        goesTimeMinutes = now.getUTCMinutes().toString()
-    }
-    goesTimeObject = (now.getUTCFullYear().toString() + day.toString() + now.getUTCHours().toString() + goesTimeMinutes)
-
-    // Find the smallest image size to get given the display resolution
-    imageSizes = [339, 678, 1808, 5424, 10848]
-        // https://forum.freecodecamp.org/t/freecodecamp-challenge-guide-where-do-i-belong/16094
+    // https://forum.freecodecamp.org/t/freecodecamp-challenge-guide-where-do-i-belong/16094
     function getIndexToIns(arr, num) {
         arr.sort(function(a, b) {
             return a - b;
@@ -59,8 +37,59 @@
         return i;
     }
 
+
+
+
+    // Create date object
+    function getDate(offset) {
+        var now = new Date();
+
+        var utc_timestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+            now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+
+        oldminutes = now.getUTCMinutes()
+
+        now.setUTCMinutes(Math.floor((oldminutes - offset) / 10) * 10)
+
+        var start = new Date(now.getFullYear(), 0, 0);
+        var diff = now - start;
+        var oneDay = 1000 * 60 * 60 * 24;
+        var day = Math.floor(diff / oneDay);
+
+        if (now.getUTCMinutes() == 0) {
+            goesTimeMinutes = "00"
+        } else {
+            goesTimeMinutes = now.getUTCMinutes().toString()
+        }
+        return (now.getUTCFullYear().toString() + day.toString() + now.getUTCHours().toString() + goesTimeMinutes)
+
+    }
+
+    function updateImage(goesTime, imageSize) {
+        goesSrcString = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/${goesTimeObject}_GOES16-ABI-FD-GEOCOLOR-${imageSize}x${imageSize}.jpg`
+        satImage = document.getElementById("satImage").src = goesSrcString
+        return Promise
+    }
+
+
+    let offset = 10
+    goesTimeObject = getDate(offset)
+        // Find the smallest image size to get given the display resolution
+    imageSizes = [339, 678, 1808, 5424, 10848]
     imageSize = (imageSizes[getIndexToIns(imageSizes, window.innerHeight)])
 
-    goesSrcString = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/${goesTimeObject}_GOES16-ABI-FD-GEOCOLOR-${imageSize}x${imageSize}.jpg`
-    satImage = document.getElementById("satImage").src = goesSrcString
+    lookbackImage(offset);
+
+    function lookbackImage(offset) {
+        while (document.getElementById('satImage').height < Math.min(...imageSizes)) {
+            console.log(document.getElementById('satImage').height, "dasd")
+            offset = offset + 10
+            goesTimeObject = getDate(offset)
+            updateImage(goesTimeObject, imageSize)
+            if (offset > 1000) {
+                console.log("Offset over 1000, exited while loop")
+                break
+            }
+        }
+    }
 </script>
