@@ -67,7 +67,7 @@
         } else {
             goesTimeMinutes = now.getUTCMinutes().toString()
         }
-        return (now.getUTCFullYear().toString() + day.toString() + pad(now.getUTCHours()).toString() + goesTimeMinutes)
+        return (now.getUTCFullYear().toString() + 0 + pad(day).toString() + pad(now.getUTCHours()).toString() + goesTimeMinutes)
 
     }
 
@@ -85,6 +85,22 @@
     imageSize = (imageSizes[getIndexToIns(imageSizes, window.innerHeight)])
     let imagepromise = updateImage(goesTimeObject, imageSize)
 
+    // wakelock attempt: https://developers.google.com/web/updates/2019/12/nic79#wake-lock
+    // The wake lock sentinel.
+    let wakeLock = null;
+
+    // Function that attempts to request a wake lock.
+    const requestWakeLock = async() => {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock was released');
+            });
+            console.log('Wake Lock is active');
+        } catch (err) {
+            console.error(`${err.name}, ${err.message}`);
+        }
+    };
     // lookbackImage(offset);
 
     // async function lookbackImage(offset) {
