@@ -82,7 +82,7 @@
         var image = document.getElementById("satImage");
         image.src = goesSrcString
         console.log('starting sleep');
-        await sleep(10);
+        await sleep(10000);
         console.log('ending sleep');
         console.log(image.complete, image.naturalHeight)
         if (image.complete && image.naturalHeight > 0) {
