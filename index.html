@@ -6,12 +6,17 @@
 <head>
     <!-- Refresh the page every 10 minutes -->
     <meta http-equiv="refresh" content="600">
+    <script type="text/javascript">
+        var loadingFlags = [1, 1];
+        function setLoadingFlags(i) { loadingFlags[i] = 0; }
+    </script>
+
 </head>
 
 <body>
     <div class=page-container>
         <div class="img-container">
-            <img id="satImage" src="">
+            <img id="satImage" src="" onload="setLoadingFlags(0)">
             <div class="noaa-cover cover"></div>
             <div class='date-cover cover'></div>
         </div>
@@ -21,134 +26,117 @@
 
 </html>
 <script>
-    // get screem size 
-                                                    ///define global sleep function.
-                                                    const sleep = ms => new Promise(res => setTimeout(res, ms));
-    // https://forum.freecodecamp.org/t/freecodecamp-challenge-guide-where-do-i-belong/16094
-    function getIndexToIns(arr, num) {
-        arr.sort(function(a, b) {
-            return a - b;
+// get screem size 
+                                                ///define global sleep functi
+// const sleep = ms => new Promise(res => setTimeout(res, ms));
+// https://forum.freecodecamp.org/t/freecodecamp-challenge-guide-where-do-i-belong/16094
+function getIndexToIns(arr, num) {
+    arr.sort(function(a, b) {
+        return a - b;
+    });
+
+    var i = 0;
+    while (num > arr[i]) {
+        i++;
+    }
+
+    return i;
+}
+
+
+
+
+// Create date object
+function getDate(offset) {
+    //utility function to pad minutes and hours: 
+    function pad(value) {
+        if (value < 10) {
+            return '0' + value;
+        } else {
+            return value;
+        }
+    }
+    var now = new Date();
+
+    var utc_timestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+        now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
+
+    oldminutes = now.getUTCMinutes()
+
+    now.setUTCMinutes(oldminutes - offset)
+
+    var start = new Date(now.getFullYear(), 0, 0);
+    var diff = now - start;
+    var oneDay = 1000 * 60 * 60 * 24;
+    var day = Math.floor(diff / oneDay);
+
+    if (now.getUTCMinutes() == 0) {
+        goesTimeMinutes = "00"
+    } else {
+        goesTimeMinutes = now.getUTCMinutes().toString()
+    }
+    return (now.getUTCFullYear().toString() + 0 + pad(day).toString() + pad(now.getUTCHours()).toString() + pad(goesTimeMinutes))
+
+}
+
+
+async function updateImage(goesTime, imageSize) {
+
+    // url("https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/20210671640_GOES16-ABI-FD-GEOCOLOR-1808x1808.jpg")
+    goesSrcString = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/${goesTimeObject}_GOES16-ABI-FD-GEOCOLOR-${imageSize}x${imageSize}.jpg`
+    console.log(goesSrcString)
+    var image = document.getElementById("satImage");
+    image.src = goesSrcString
+    // console.log('starting sleep');
+    // await sleep(10000);
+    // console.log('ending sleep');
+    try{
+        await image.decode()
+        return true
+    } catch {
+        return false
+    }
+}
+
+
+// wakelock attempt: https://developers.google.com/web/updates/2019/12/nic79#wake-lock
+// Function that attempts to request a wake lock.
+const requestWakeLock = async() => {
+    try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        wakeLock.addEventListener('release', () => {
+            console.log('Wake Lock was released');
         });
-
-        var i = 0;
-        while (num > arr[i]) {
-            i++;
-        }
-
-        return i;
+        console.log('Wake Lock is active');
+    } catch (err) {
+        console.error(`${err.name}, ${err.message}`);
     }
+};
 
 
-
-
-    // Create date object
-    function getDate(offset) {
-        //utility function to pad minutes and hours: 
-        function pad(value) {
-            if (value < 10) {
-                return '0' + value;
-            } else {
-                return value;
-            }
-        }
-        var now = new Date();
-
-        var utc_timestamp = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
-            now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds(), now.getUTCMilliseconds());
-
-        oldminutes = now.getUTCMinutes()
-
-        now.setUTCMinutes(oldminutes - offset)
-
-        var start = new Date(now.getFullYear(), 0, 0);
-        var diff = now - start;
-        var oneDay = 1000 * 60 * 60 * 24;
-        var day = Math.floor(diff / oneDay);
-
-        if (now.getUTCMinutes() == 0) {
-            goesTimeMinutes = "00"
-        } else {
-            goesTimeMinutes = now.getUTCMinutes().toString()
-        }
-        return (now.getUTCFullYear().toString() + 0 + pad(day).toString() + pad(now.getUTCHours()).toString() + pad(goesTimeMinutes))
-
-    }
-
-    async function updateImage(goesTime, imageSize) {
-
-        // url("https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/20210671640_GOES16-ABI-FD-GEOCOLOR-1808x1808.jpg")
-        goesSrcString = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/${goesTimeObject}_GOES16-ABI-FD-GEOCOLOR-${imageSize}x${imageSize}.jpg`
-        console.log(goesSrcString)
-        var image = document.getElementById("satImage");
-        image.src = goesSrcString
-        console.log('starting sleep');
-        await sleep(10000);
-        console.log('ending sleep');
-        console.log(image.complete, image.naturalHeight)
-        if (image.complete && image.naturalHeight > 0) {
-            return true
-        } else {
-            return false
-        }
-    }
-
-
-    // wakelock attempt: https://developers.google.com/web/updates/2019/12/nic79#wake-lock
-    // Function that attempts to request a wake lock.
-    const requestWakeLock = async() => {
-        try {
-            wakeLock = await navigator.wakeLock.request('screen');
-            wakeLock.addEventListener('release', () => {
-                console.log('Wake Lock was released');
-            });
-            console.log('Wake Lock is active');
-        } catch (err) {
-            console.error(`${err.name}, ${err.message}`);
-        }
-    };
-
-    async function imageLoaded() {
-        var image = document.getElementById("satImage");
-        var isLoaded = image.complete && image.naturalHeight > 0;
-        // window.addEventListener('load', function () {
-        //     console.log(image, isLoaded)
-        //     return isLoaded
-        // })
-
-        image.onload = async function () {
-            // the image is ready
-            console.log("imageLoaded")
-            return true
-        };
-        image.onerror = async function () {
-            // the image has failed
-            console.log('image did not load')
-            return false
-        };
-
-    };
-
-    (async function () {
-        // Find the smallest image size to get given the display resolution
-        imageSizes = [339, 678, 1808, 5424, 10848]
-        imageSize = (imageSizes[getIndexToIns(imageSizes, screen.availHeight)])
-        let offset = 0
+(async function () {
+    // Find the smallest image size to get given the display resolution
+    imageSizes = [339, 678, 1808, 5424, 10848]
+    imageSize = (imageSizes[getIndexToIns(imageSizes, screen.availHeight)])
+    let offset = 0
+    goesTimeObject = getDate(offset)
+    let imageLoaded = await updateImage(goesTimeObject, imageSize)
+    while (imageLoaded != true) {
         goesTimeObject = getDate(offset)
-        while (await updateImage(goesTimeObject, imageSize) != true) {
-            goesTimeObject = getDate(offset)
-            // console.log(goesTimeObject)
-            console.log(await updateImage(goesTimeObject, imageSize))
-            // console.log(await imageLoaded())
-            offset = offset + 1
-            if (offset > 45) {
-                break
-            }
+        imageLoaded = await updateImage(goesTimeObject, imageSize)
+        if(imageLoaded==true){
+            break
         }
+        offset = offset + 1
+        if (offset > 45) {
+            break
+        }
+    }
 
 
-        // The wake lock sentinel.
-        let wakeLock = null;
-    }())
+    // The wake lock sentinel.
+    let wakeLock = null;
+}())
     // lookbackImage(offset);
 
     // async function lookbackImage(offset) {
