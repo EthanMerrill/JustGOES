@@ -83,7 +83,8 @@ function getDate(offset) {
 async function updateImage(goesTime, imageSize) {
 
     // url("https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/20210671640_GOES16-ABI-FD-GEOCOLOR-1808x1808.jpg")
-    goesSrcString = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/${goesTimeObject}_GOES16-ABI-FD-GEOCOLOR-${imageSize}x${imageSize}.jpg`
+    goesSrcStringDynamic = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/${goesTimeObject}_GOES16-ABI-FD-GEOCOLOR-${imageSize}x${imageSize}.jpg`
+    goesSrcString = `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/FD/GEOCOLOR/1808x1808.jpg`
     console.log(goesSrcString)
     var image = document.getElementById("satImage");
     image.src = goesSrcString
